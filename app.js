@@ -223,12 +223,12 @@ class Home extends React.Component {
                                                     <strong className="display-5">Impôt a payer : {numeral(this.state.taxes).format('0,0') + ' €'}</strong>
                                                 </p>
                                                 <hr/>
-                                                <p>Nombre de part fiscal : {this.state.parts}</p>
-                                                <p>Revenu net imposable réel : {numeral(this.state.gain / this.state.parts).format('0,0') + ' €'}</p>
+                                                <p>Quotient familial  : {this.state.parts}</p>
+                                                <p>Revenus net imposable réel : {numeral(this.state.gain / this.state.parts).format('0,0') + ' €'}</p>
                                                 <p>En pourcentage de votre salaire : {((this.state.gain === '' || this.state.gain === '0') ? 0 : (this.state.taxes / this.state.gain * 100).toFixed(2)) + '%' }</p>
                                                 <hr/>
                                                 <p style={{fontSize:'20px'}}> 
-                                                    <strong>Revenu apres impôts : {numeral(this.state.gain - Math.round(this.state.taxes)).format('0,0') + ' €'}</strong>
+                                                    <strong>Revenus après impôts : {numeral(this.state.gain - Math.round(this.state.taxes)).format('0,0') + ' €'}</strong>
                                                 </p>
                                             </div>
                                         </div> 
@@ -242,8 +242,8 @@ class Home extends React.Component {
                     </div>
                 </div>
                 <div className="text-center mt-4"> 
-                    <p className={"text-muted"}>Réalisé par : <a className={"text-primary"} href="https://www.antonbourtnik.fr" target="_blank"><strong>Anton Bourtnik</strong></a></p>
-                    <p className={"text-muted"}>Reponse au challenge : <a className={"text-primary"} href="https://github.com/Grafikart/Challenges/tree/master/JS/2-Impot.fr" target="_blank">Calculateur d'impôt sur le revenu</a> proposé par <a href="https://www.grafikart.fr" target="_blank">Grafikart</a> - Source du calcul : <a href="https://www.economie.gouv.fr/particuliers/tranches-imposition-impot-revenu#etapescalculir">www.economie.gouv.fr</a></p>
+                    <p className={"text-muted"}>Réalisé par : <a className={"text-primary"} href="https://www.antonbourtnik.fr" target="_blank"><strong>Anton Bourtnik</strong></a> - Code source : <a href="https://github.com/abourtnik/simulator-taxes">Github</a></p>
+                    <p className={"text-muted"}>Reponse au challenge : <a className={"text-primary"} href="https://github.com/Grafikart/Challenges/tree/master/JS/2-Impot.fr" target="_blank">Calculateur d'impôt sur le revenu</a> proposé par <a href="https://www.grafikart.fr" target="_blank">Grafikart</a> - Source du calcul : <a href="https://www.economie.gouv.fr/particuliers/tranches-imposition-impot-revenu#etapescalculir" target="_blank">www.economie.gouv.fr</a></p>
                 </div>
             </React.Fragment>
         )

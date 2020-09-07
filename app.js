@@ -11,7 +11,7 @@ function Field ({name, label, value, onChange, help}) {
         <div className="form-group">
             <label className={"text-left"} htmlFor={name}><strong>{label}</strong></label>
             <div className="input-group">
-                <input name={name} type="number" className="form-control" id={name} value={value} onChange={onChange}/>
+                <input name={name} type="number" min="0" className="form-control" id={name} value={value} onChange={onChange}/>
                 <div className="input-group-append">
                     <div className="input-group-text">€</div>
                 </div>
@@ -29,7 +29,7 @@ function Table ({parts, tranches}) {
                 <th scope="col">Tranche n°</th>
                 <th scope="col">Montant des revenus</th>
                 <th scope="col">Imposition</th>
-                <th scope="col">Impot payé</th>
+                <th scope="col">Impôt payé</th>
             </tr>
             </thead>
             <tbody>
@@ -43,7 +43,7 @@ function Table ({parts, tranches}) {
                                     ( (index === parts.length - 1) ? 'ou plus' : numeral(part.limit).format('0,0') + ' €' )
                                     } 
                             taxe={numeral(part.taxe).format('0%')} 
-                            pay={numeral(tranches[index]).format('0,0')}
+                            pay={numeral(tranches[index]).format('0,0.00')}
                         />
                     )
                 })}
@@ -79,46 +79,52 @@ class Home extends React.Component {
         this.limit = PARTS.map( part => part.limit)
         this.percentage = PARTS.map( part => part.taxe)
         this.impots = 0; 
+        this.gain = 0; 
         this.tranches = new Array(this.limit.length).fill(0);
     }
 
-   calcQuotien = () => {
-
+    calcTaxes = (gain) => {
+       
+        /* Init */
+        this.impots = 0;
+        this.gain = gain;
+        this.tranches = new Array(this.limit.length).fill(0);
         let quotient = 1;
 
+        /* Calcul quotien */
         if (this.state.couple) quotient ++;
       
-        if (this.state.childrens > 0)
-          if (this.state.childrens <= 2) 
-            quotient = quotient + 0.5 * this.state.childrens;
-          else 
-            quotient = quotient + (this.state.childrens - 2) * 1 + 1; 
+        if (this.state.childrens > 0){
+            let CMI = this.state.CMIchildrens * 0.5;
+            if (this.state.childrens <= 2) 
+              quotient = quotient + 0.5 * this.state.childrens + CMI;
+            else 
+              quotient = quotient + (this.state.childrens - 2) * 1 + 1 + CMI; 
+        }
+        
+        /* Calcul impots */
+        this.gain = this.gain / quotient;
+        let impots = this.calc(1);
 
-        this.setState({parts:quotient})
-    }
-
-    calcTaxes = () =>  {
-
-        this.impots = 0;
-        this.tranches = new Array(this.limit.length).fill(0);
-
-        this.state.gain = this.state.gain / this.state.parts;
-        let impots = this.calc();
-        return impots * this.parts;
+        /* Mise à jour */
+        this.setState({
+            parts:quotient,
+            taxes: impots * quotient
+        })
     }
 
     calc = (index = 1) => {
 
-        if (this.state.gain <= this.limit[0]) return 0
+        if (this.gain <= this.limit[0]) return 0
       
-        if (index != this.limit.length - 1 && this.state.gain > this.limit[index]) {
-          let pay = (this.limit[index] - this.limit[index-1]) * this.percentage[index];
+        if (index != this.limit.length - 1 && this.gain > this.limit[index]) {
+          let pay = (this.limit[index] - (this.limit[index-1] + 1)) * this.percentage[index];
           this.impots += pay;
           this.tranches[index] = pay;
           return this.calc(index+1) 
         }
         else {
-          let pay = (this.state.gain - this.limit[index-1]) * this.percentage[index];
+          let pay = (this.gain - (this.limit[index-1] + 1)) * this.percentage[index];
           this.tranches[index] = pay;
           return this.impots += pay;
         }
@@ -130,25 +136,21 @@ class Home extends React.Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = e.target.name;
 
-        this.setState({
-            [name]: value,
-        }, () => {
-            this.calcQuotien();
-            this.setState({
-                taxes:this.calcTaxes()
-            })
-        })
+        this.setState(
+            {[name]: value},
+            () => this.calcTaxes(this.state.gain)
+        )
     }
 
     render () {
         return (
             <React.Fragment>
                 <div className="jumbotron bg-primary text-light text-center shadow rounded-O"> 
-                    <h1>Simulateur impot sur le revenu</h1>
+                    <h1>Simulateur impôt sur le revenu 2020</h1>
                 </div>
                 <div className="container-fluid">
                     <div className="row">
-                        <div className="col-sm">  
+                        <div className="col-lg mb-4">  
                             <div className="card shadow border-primary text-center">
                                 <div className="card-header text-primary">
                                     <h5 className="mb-0">1. Je renseigne mes revenus</h5>
@@ -164,10 +166,10 @@ class Home extends React.Component {
                                 </div>
                             </div>
                         </div>  
-                        <div className="col-sm">  
+                        <div className="col-lg">  
                             <div className="card shadow border-primary text-center">
                                 <div className="card-header text-primary">
-                                    <h5 className="mb-0">2. Je renseigne les caracterisque de mon foyer fiscal</h5>
+                                    <h5 className="mb-0">2. Je renseigne les caracterisques de mon foyer fiscal</h5>
                                 </div>
                                 <div className="card-body">
                                     <div className="form-check text-left">
@@ -215,13 +217,22 @@ class Home extends React.Component {
                                 </div>
                                 <div className="card-body">
                                     <div className="row">
-                                        <div className="col">
-                                            <p className="alert alert-primary">Impot a payer : {numeral(Math.round(this.state.taxes)).format('0,0') + ' €'}</p>
-                                            <p className="alert alert-primary">En pourcentage de votre salaire : {(this.state.taxes / this.state.gain * 100).toFixed(2) + '%' }</p>
-                                            <p className="alert alert-primary">Nombre de part fiscal : {this.state.parts}</p>
-                                            <p className="alert alert-primary">Revenus apres impots : {numeral(this.state.gain - Math.round(this.state.taxes)).format('0,0') + ' €'}</p>
+                                        <div className="col-xl-6 col-lg-5">
+                                            <div className="alert alert-primary">
+                                                <p style={{fontSize:'20px'}}> 
+                                                    <strong className="display-5">Impôt a payer : {numeral(this.state.taxes).format('0,0') + ' €'}</strong>
+                                                </p>
+                                                <hr/>
+                                                <p>Nombre de part fiscal : {this.state.parts}</p>
+                                                <p>Revenu net imposable réel : {numeral(this.state.gain / this.state.parts).format('0,0') + ' €'}</p>
+                                                <p>En pourcentage de votre salaire : {((this.state.gain === '' || this.state.gain === '0') ? 0 : (this.state.taxes / this.state.gain * 100).toFixed(2)) + '%' }</p>
+                                                <hr/>
+                                                <p style={{fontSize:'20px'}}> 
+                                                    <strong>Revenu apres impôts : {numeral(this.state.gain - Math.round(this.state.taxes)).format('0,0') + ' €'}</strong>
+                                                </p>
+                                            </div>
                                         </div> 
-                                        <div className="col">
+                                        <div className="col-xl-6 col-lg-7">
                                             <Table parts={PARTS} tranches={this.tranches}/>
                                         </div> 
                                     </div>
@@ -231,8 +242,8 @@ class Home extends React.Component {
                     </div>
                 </div>
                 <div className="text-center mt-4"> 
-                    <p className={"text-muted"}>Reponse au challenge de Grafikart : <a className={"text-primary"} href="">Grafikart</a></p>
-                    <p className={"text-muted"}>Source : <a href="">Source</a></p>
+                    <p className={"text-muted"}>Réalisé par : <a className={"text-primary"} href="https://www.antonbourtnik.fr" target="_blank"><strong>Anton Bourtnik</strong></a></p>
+                    <p className={"text-muted"}>Reponse au challenge : <a className={"text-primary"} href="https://github.com/Grafikart/Challenges/tree/master/JS/2-Impot.fr" target="_blank">Calculateur d'impôt sur le revenu</a> proposé par <a href="https://www.grafikart.fr" target="_blank">Grafikart</a> - Source du calcul : <a href="https://www.economie.gouv.fr/particuliers/tranches-imposition-impot-revenu#etapescalculir">www.economie.gouv.fr</a></p>
                 </div>
             </React.Fragment>
         )

@@ -23,42 +23,42 @@ function Field ({name, label, value, onChange, help}) {
 
 function Table ({parts, tranches}) {
     return (
-        <table className="table table-striped table-bordered">
-            <thead>
-            <tr>
-                <th scope="col">Tranche n°</th>
-                <th scope="col">Montant des revenus</th>
-                <th scope="col">Imposition</th>
-                <th scope="col">Impôt payé</th>
-            </tr>
-            </thead>
-            <tbody>
-                {parts.map( function(part, index) {
-                    return (
-                        <Row 
-                            key={index}
-                            index={index+1} 
-                            limit={ 
-                                    ( (index === 0) ? numeral(0).format('0,0') + ' €' : numeral(parts[index-1].limit).format('€0,0') + ' €') + ' - ' + 
-                                    ( (index === parts.length - 1) ? 'ou plus' : numeral(part.limit).format('0,0') + ' €' )
-                                    } 
-                            taxe={numeral(part.taxe).format('0%')} 
-                            pay={numeral(tranches[index]).format('0,0.00')}
-                        />
-                    )
-                })}
-            </tbody>
-        </table>
+            <table className="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">Tranche n°</th>
+                    <th scope="col">Montant des revenus</th>
+                    <th scope="col">Imposition</th>
+                    <th scope="col">Impôt payé</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {parts.map( function(part, index) {
+                        return (
+                            <Row 
+                                key={index}
+                                index={index+1} 
+                                limit={ 
+                                        ( (index === 0) ? numeral(0).format('0,0') + ' €' : numeral(parts[index-1].limit).format('€0,0') + ' €') + ' - ' + 
+                                        ( (index === parts.length - 1) ? 'ou plus' : numeral(part.limit).format('0,0') + ' €' )
+                                        } 
+                                taxe={numeral(part.taxe).format('0%')} 
+                                pay={numeral(tranches[index]).format('0,0.00')}
+                            />
+                        )
+                    })}
+                </tbody>
+            </table>
     )   
 }
 
 function Row ({index, limit, taxe, pay}) {
     return (
         <tr>
-            <td>{index}</td>
-            <td>{limit}</td>
-            <td>{taxe}</td>
-            <td>{pay + ' €'}</td>
+            <td data-label="Tranche n°">{index}</td>
+            <td data-label="Montant des revenus">{limit}</td>
+            <td data-label="Imposition">{taxe}</td>
+            <td data-label="Impôt payé">{pay + ' €'}</td>
         </tr>
     )
 } 
@@ -186,7 +186,7 @@ class Home extends React.Component {
                                     </div>
                                     <hr/>
                                     <div className="row">
-                                        <div className="col">
+                                        <div className="col-12 col-sm-6">
                                             <Field 
                                                 name={'childrens'} 
                                                 label={'Mes enfants a charge'} 
@@ -195,7 +195,7 @@ class Home extends React.Component {
                                                 onChange={this.handleChange}
                                             />
                                         </div>
-                                        <div className="col">
+                                        <div className="col-12 col-sm-6">
                                             <Field 
                                                 name={'CMIchildrens'} 
                                                 label={'Mes enfants titulaires de la CMI'} 

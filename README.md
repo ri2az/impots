@@ -3,6 +3,6 @@
     <img src="https://abourtnik.github.io/simulator-taxes/logo.png" alt="Simulateur Impôt logo" height="200">
   </a>
   <br>
-  Simulateur Impôt sur le revenu 2020
+  Simulateur Impôt sur le revenu 2021
   <br>
 </h1>

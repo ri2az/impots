@@ -1,8 +1,8 @@
 const PARTS = [
-    {limit:10084, taxe: 0},
-    {limit:25710, taxe: 0.11},
-    {limit:73516, taxe: 0.3},
-    {limit:158122, taxe: 0.41},
+    {limit:10225, taxe: 0},
+    {limit:26070, taxe: 0.11},
+    {limit:74545, taxe: 0.3},
+    {limit:160336, taxe: 0.41},
     {limit:'+' , taxe: 0.45}
 ];
     

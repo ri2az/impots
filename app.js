@@ -1,8 +1,8 @@
 const PARTS = [
-    {limit:10777, taxe: 0},
-    {limit:27478, taxe: 0.11},
-    {limit:78570, taxe: 0.3},
-    {limit:168994, taxe: 0.41},
+    {limit:11294, taxe: 0},
+    {limit:28798, taxe: 0.11},
+    {limit:82342, taxe: 0.3},
+    {limit:177106, taxe: 0.41},
     {limit:'+' , taxe: 0.45}
 ];
     
@@ -146,7 +146,7 @@ class Home extends React.Component {
         return (
             <React.Fragment>
                 <div className="jumbotron bg-primary text-light text-center shadow rounded-O"> 
-                    <h1>Simulateur impôt sur le revenu 2022</h1>
+                    <h1>Simulateur impôt sur le revenu 2023</h1>
                 </div>
                 <div className="container-fluid">
                     <div className="row">
